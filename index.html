@@ -1,0 +1,1996 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>とびばこナビ</title>
+  <style>
+    /* ==========================================================
+       CSS RESET & HIGH-CONTRAST MOBILE-FIRST STYLES
+       100% Offline Compatible - Zero External Dependencies
+       ========================================================== */
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-light: #eff6ff;
+      --secondary: #059669;
+      --accent: #d97706;
+      --accent-light: #fef3c7;
+      --danger: #dc2626;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #cbd5e1;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Meiryo", sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+    }
+
+    /* Global Furigana Toggle */
+    body.hide-ruby rt {
+      display: none !important;
+    }
+
+    /* App Container */
+    #app-container {
+      display: flex;
+      flex-direction: column;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+    }
+
+    /* ==========================================================
+       HEADER (Restored & Enhanced Header with Always-Visible Goal)
+       ========================================================== */
+    header {
+      height: 48px;
+      background: var(--card-bg);
+      border-bottom: 2px solid var(--border);
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      z-index: 50;
+    }
+
+    .brand {
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-header {
+      background: var(--bg);
+      border: 2px solid var(--border);
+      padding: 4px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      font-weight: 900;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      height: 34px;
+      min-height: 34px;
+      transition: all 0.15s ease;
+    }
+
+    .student-badge-btn {
+      background: var(--primary-light);
+      color: var(--primary);
+      border-color: #93c5fd;
+    }
+
+    .goal-badge-btn {
+      background: #fef3c7;
+      color: #b45309;
+      border-color: #f59e0b;
+      font-weight: 900;
+      box-shadow: 0 1px 3px rgba(245, 158, 11, 0.2);
+    }
+
+    .goal-badge-btn:active {
+      transform: scale(0.96);
+    }
+
+    .goal-banner {
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      border: 2px solid #f59e0b;
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #92400e;
+      font-weight: 900;
+      font-size: 0.95rem;
+    }
+
+    /* Tab Bar Navigation (Large Size for Easy Tapping) */
+    .tab-bar {
+      display: flex;
+      background: #e2e8f0;
+      border-bottom: 2px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .nav-btn {
+      flex: 1;
+      padding: 12px 8px;
+      font-size: 0.95rem;
+      font-weight: 900;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border-bottom: 4px solid transparent;
+      transition: all 0.2s ease;
+    }
+
+    .nav-btn.active {
+      background: var(--card-bg);
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    /* ==========================================================
+       MAIN VIEWPORT & PAGE CARDS
+       ========================================================== */
+    main {
+      flex: 1;
+      min-height: 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tab-page {
+      width: 100%;
+      height: 100%;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .tab-page.active {
+      display: flex;
+    }
+
+    .scrollable-page {
+      overflow-y: auto;
+      padding: 14px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* Common Buttons */
+    .btn-full {
+      width: 100%;
+      padding: 10px;
+      border-radius: var(--radius-sm);
+      font-weight: 800;
+      font-size: 0.85rem;
+      cursor: pointer;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-height: 42px;
+    }
+
+    .btn-p { background: var(--primary); color: #ffffff; }
+    .btn-s { background: var(--secondary); color: #ffffff; }
+    .btn-o { background: var(--accent-light); color: var(--accent); border: 1.5px solid var(--accent); }
+    .btn-d { background: var(--danger); color: #ffffff; }
+
+    /* ==========================================================
+       TAB 1: 「たんけん」(PARALLEL 2-COLUMN LAYOUT)
+       ========================================================== */
+    .explore-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    @media (max-width: 680px) {
+      .explore-split { grid-template-columns: 1fr; }
+    }
+
+    .col-header {
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      font-weight: 900;
+      font-size: 1rem;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-align: left;
+    }
+
+    .col-aux { background: #e0f2fe; color: #0369a1; border: 1.5px solid #7dd3fc; }
+    .col-vault { background: #fef3c7; color: #b45309; border: 1.5px solid #fcd34d; }
+
+    .card-item {
+      background: var(--card-bg);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      width: 100%;
+      position: relative;
+    }
+
+    .card-item.is-goal-target {
+      border-color: #f59e0b;
+      background: #fffbeb;
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.3);
+    }
+
+    .card-title {
+      font-weight: 900;
+      font-size: 1rem;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      text-align: left;
+      width: 100%;
+    }
+
+    .goal-tag-badge {
+      background: #f59e0b;
+      color: #ffffff;
+      font-size: 0.72rem;
+      font-weight: 900;
+      padding: 2px 8px;
+      border-radius: 12px;
+    }
+
+    .point-tag {
+      background: #f1f5f9;
+      border-left: 4px solid var(--primary);
+      padding: 8px 10px;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-size: 0.82rem;
+      color: #334155;
+      margin-bottom: 8px;
+      text-align: left;
+      width: 100%;
+      line-height: 1.4;
+    }
+
+    .four-step-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    .step-box {
+      background: #f8fafc;
+      border-left: 4px solid var(--primary);
+      padding: 8px 10px;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-size: 0.78rem;
+      text-align: left;
+      border: 1px solid var(--border);
+      border-left-width: 4px;
+    }
+
+    .step-label {
+      color: var(--primary);
+      font-weight: 900;
+      display: block;
+      margin-bottom: 3px;
+      font-size: 0.8rem;
+    }
+
+    /* ==========================================================
+       TAB 2: 「さつえい・ひかく」(COMPACT MAXIMIZED CAMERA)
+       ========================================================== */
+    #tab-camera {
+      display: none;
+      flex-direction: column;
+      height: 100%;
+      padding: 2px;
+      gap: 4px;
+      background: #090d16;
+    }
+
+    #tab-camera.active {
+      display: flex;
+    }
+
+    .cam-task-bar {
+      height: 32px;
+      background: rgba(255,255,255,0.08);
+      border-radius: var(--radius-sm);
+      padding: 0 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #ffffff;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+      gap: 6px;
+    }
+
+    .task-title-text {
+      font-weight: 900;
+      color: #38bdf8;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* DUAL CAMERA ARENA (カメラ・動画表示領域を大幅に拡大) */
+    .dual-camera-arena {
+      flex: 1;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px;
+      position: relative;
+    }
+
+    @media (max-width: 520px) {
+      .dual-camera-arena {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr;
+      }
+    }
+
+    .slot-card {
+      background: #000000;
+      border-radius: var(--radius-md);
+      border: 1.5px solid #334155;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .slot-card.active-target {
+      border-color: #10b981;
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+    }
+
+    .slot-tag {
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      z-index: 10;
+      background: rgba(15, 23, 42, 0.85);
+      color: #ffffff;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .slot-media-wrap {
+      flex: 1;
+      height: 100%;
+      min-height: 0;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #000000;
+    }
+
+    .slot-media-wrap video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    #webcam-live-preview {
+      transform: scaleX(-1);
+    }
+
+    #webcam-live-preview.rear-camera {
+      transform: scaleX(1);
+    }
+
+    .placeholder-msg {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #64748b;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-align: center;
+      padding: 8px;
+    }
+
+    /* Countdown HUD Overlay */
+    .hud-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      z-index: 30;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+    }
+
+    .hud-count-num {
+      font-size: 5rem;
+      font-weight: 900;
+      color: #fbbf24;
+      line-height: 1;
+    }
+
+    .rec-badge {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      background: #dc2626;
+      color: #ffffff;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 0.7rem;
+      font-weight: 900;
+      display: none;
+      align-items: center;
+      gap: 4px;
+      z-index: 20;
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink { 50% { opacity: 0.3; } }
+
+    /* Controls Bar (コンパクト化・高さ抑制によりカメラ表示面積を最大確保) */
+    .cam-bottom-controls {
+      background: #0f172a;
+      border-radius: var(--radius-sm);
+      padding: 4px 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex-shrink: 0;
+      max-height: 38%;
+      overflow-y: auto;
+    }
+
+    .cam-btn-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+      flex-wrap: nowrap;
+    }
+
+    .btn-record-mode {
+      background: #dc2626;
+      color: #ffffff;
+      border: none;
+      padding: 0 8px;
+      height: 34px;
+      border-radius: var(--radius-sm);
+      font-size: 0.76rem;
+      font-weight: 900;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      box-shadow: 0 2px 6px rgba(220, 38, 38, 0.4);
+      flex: 1;
+      min-width: 85px;
+    }
+
+    .btn-record-mode.recording-active {
+      background: #16a34a !important;
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse { 50% { transform: scale(0.98); } }
+
+    .btn-cam-action {
+      background: #1e293b;
+      color: #f8fafc;
+      border: 1px solid #475569;
+      height: 34px;
+      padding: 0 6px;
+      border-radius: var(--radius-sm);
+      font-size: 0.72rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      white-space: nowrap;
+    }
+
+    /* 4-Point Evaluation Section in Camera Screen (省スペース化) */
+    .cam-points-eval-box {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: var(--radius-sm);
+      padding: 3px 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .cam-point-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+      background: rgba(15, 23, 42, 0.75);
+      padding: 3px 6px;
+      border-radius: 4px;
+    }
+
+    .cam-point-label {
+      font-size: 0.72rem;
+      font-weight: 900;
+      color: #38bdf8;
+      white-space: nowrap;
+    }
+
+    .cam-point-desc {
+      font-size: 0.68rem;
+      color: #cbd5e1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+    }
+
+    .point-eval-bar {
+      display: flex;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+
+    .point-eval-btn {
+      border: 1px solid #475569;
+      background: #1e293b;
+      border-radius: 4px;
+      padding: 2px 5px;
+      font-size: 0.66rem;
+      font-weight: 700;
+      cursor: pointer;
+      opacity: 0.65;
+      transition: all 0.15s ease;
+      color: #cbd5e1;
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .point-eval-btn.active {
+      opacity: 1;
+      font-weight: 900;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+    }
+
+    .point-eval-btn.active-bacchiri { background: #991b1b; border-color: #ef4444; color: #ffffff; }
+    .point-eval-btn.active-dekita { background: #065f46; border-color: #10b981; color: #ffffff; }
+    .point-eval-btn.active-mousukoshi { background: #92400e; border-color: #f59e0b; color: #ffffff; }
+
+    /* Overall Self-Evaluation Strip */
+    .evaluation-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+      background: rgba(255,255,255,0.08);
+      padding: 4px;
+      border-radius: var(--radius-sm);
+    }
+
+    .stamp-chip {
+      flex: 1;
+      background: #1e293b;
+      border: 1.5px solid #475569;
+      color: #cbd5e1;
+      padding: 4px 2px;
+      border-radius: 12px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      cursor: pointer;
+      text-align: center;
+      min-height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+    }
+
+    .stamp-chip.active-bacchiri { background: #991b1b; color: #ffffff; border-color: #ef4444; font-weight: 900; }
+    .stamp-chip.active-dekita { background: #065f46; color: #ffffff; border-color: #10b981; font-weight: 900; }
+    .stamp-chip.active-mousukoshi { background: #92400e; color: #ffffff; border-color: #f59e0b; font-weight: 900; }
+
+    .reflection-input-row {
+      display: flex;
+      gap: 4px;
+    }
+
+    .reflection-input {
+      flex: 1;
+      background: #1e293b;
+      border: 1px solid #475569;
+      color: #ffffff;
+      padding: 4px 8px;
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+      outline: none;
+    }
+
+    .btn-save-record {
+      background: var(--secondary);
+      color: #ffffff;
+      border: none;
+      padding: 0 10px;
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+      font-weight: 900;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    /* ==========================================================
+       TAB 3 & 4: PORTFOLIO & TEACHER LOGS
+       ========================================================== */
+    .portfolio-card {
+      background: var(--card-bg);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      margin-bottom: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .portfolio-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      border-bottom: 1px dashed var(--border);
+      padding-bottom: 6px;
+    }
+
+    /* Modal Dialogs */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.75);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-backdrop.active {
+      display: flex;
+    }
+
+    .modal-box {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 440px;
+      padding: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .modal-title {
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      text-align: left;
+    }
+
+    .form-label {
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: var(--text-muted);
+    }
+
+    .form-select, .form-input {
+      padding: 10px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 0.95rem;
+      font-weight: 800;
+      outline: none;
+    }
+
+    .goal-option-btn {
+      background: var(--bg);
+      border: 2px solid var(--border);
+      padding: 12px;
+      border-radius: var(--radius-md);
+      font-weight: 900;
+      font-size: 0.95rem;
+      cursor: pointer;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.15s ease;
+    }
+
+    .goal-option-btn.selected {
+      background: #fef3c7;
+      border-color: #f59e0b;
+      color: #b45309;
+    }
+
+    /* Teacher Table */
+    .teacher-table-wrap {
+      overflow-x: auto;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+      text-align: left;
+    }
+
+    th, td {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    th { background: #f1f5f9; font-weight: 900; }
+  </style>
+</head>
+<body>
+
+  <div id="app-container">
+    <!-- HEADER -->
+    <header>
+      <div class="brand">
+        <span>📦</span> <span>とびばこナビ</span>
+      </div>
+
+      <div class="header-actions">
+        <!-- Student Switcher Button -->
+        <button class="btn-header student-badge-btn" onclick="openStudentModal()">
+          <span>👤</span> <span id="header-student-label">3年 つのだ</span>
+        </button>
+
+        <!-- Always Visible Goal Button -->
+        <button class="btn-header goal-badge-btn" onclick="openGoalModal()">
+          <span id="header-goal-label">🎯 もくひょう: 開脚跳び</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- NAVIGATION TABS -->
+    <div class="tab-bar">
+      <button class="nav-btn active" id="nav-btn-explore" onclick="switchTab('tab-explore')">
+        <span>🗺️</span> <span>たんけん</span>
+      </button>
+      <button class="nav-btn" id="nav-btn-camera" onclick="switchTab('tab-camera')">
+        <span>🎥</span> <span>さつえい・ひかく</span>
+      </button>
+      <button class="nav-btn" id="nav-btn-portfolio" onclick="switchTab('tab-portfolio')">
+        <span>📖</span> <span>せいちょうノート</span>
+      </button>
+      <button class="nav-btn" id="nav-btn-teacher" onclick="switchTab('tab-teacher')">
+        <span>⚙️</span> <span>管理</span>
+      </button>
+    </div>
+
+    <!-- MAIN VIEWPORT -->
+    <main>
+
+      <!-- =========================================================
+           TAB 1: 「たんけん」(PARALLEL EXPLORATION & TECHNIQUE GUIDE)
+           ========================================================= -->
+      <section class="tab-page active scrollable-page" id="tab-explore">
+        
+        <div class="explore-split">
+          
+          <!-- COLUMN 1: AUXILIARY EXERCISES (1-5) -->
+          <div>
+            <div class="col-header col-aux">
+              <span>✋</span> <span>ほじょうんどう</span>
+            </div>
+
+            <!-- Item 1 -->
+            <div class="card-item">
+              <div class="card-title">
+                <span>1. 踏み越し跳び</span>
+              </div>
+              <div class="point-tag">💡 ジャンプして跳び箱に乗ったり、跳び箱からジャンプしておりてみよう。</div>
+              <button class="btn-full btn-p" onclick="selectTaskAndShoot('aux_fumikoshi', '踏み越し跳び')">🎥 さつえいする</button>
+            </div>
+
+            <!-- Item 2 -->
+            <div class="card-item">
+              <div class="card-title">
+                <span>2. 支持でまたぎ乗り・下り</span>
+              </div>
+              <div class="point-tag">💡 腕で体を支えて、体を前に動かそう。</div>
+              <button class="btn-full btn-p" onclick="selectTaskAndShoot('aux_matagi', '支持でまたぎ乗り・下り')">🎥 さつえいする</button>
+            </div>
+
+            <!-- Item 3 -->
+            <div class="card-item">
+              <div class="card-title">
+                <span>3. 支持でまたぎ乗り・下り（だんだん）</span>
+              </div>
+              <div class="point-tag">💡 だんだんを越えるときは、腕に力を入れてお尻を持ち上げよう。</div>
+              <button class="btn-full btn-p" onclick="selectTaskAndShoot('aux_matagi_dandan', '支持でまたぎ乗り・下り（だんだん）')">🎥 さつえいする</button>
+            </div>
+
+            <!-- Item 4 -->
+            <div class="card-item">
+              <div class="card-title">
+                <span>4. 支持で跳び乗り・下り</span>
+              </div>
+              <div class="point-tag">💡 腕で体重を支えて、箱の上に両足で乗ろう。</div>
+              <button class="btn-full btn-p" onclick="selectTaskAndShoot('aux_tobinori', '支持で跳び乗り・下り')">🎥 さつえいする</button>
+            </div>
+
+            <!-- Item 5 -->
+            <div class="card-item">
+              <div class="card-title">
+                <span>5. 平均台でジャンプ</span>
+              </div>
+              <div class="point-tag">💡 両手で平均台をおして、高くジャンプしよう。</div>
+              <button class="btn-full btn-p" onclick="selectTaskAndShoot('aux_heikingai', '平均台でジャンプ')">🎥 さつえいする</button>
+            </div>
+
+          </div>
+
+          <!-- COLUMN 2: VAULT SKILLS (1-3) -->
+          <div>
+            <div class="col-header col-vault">
+              <span>🧱</span> <span>とびばこのわざ</span>
+            </div>
+
+            <!-- Skill 1: 開脚跳び -->
+            <div class="card-item" id="card-vault-kaikyaku">
+              <div class="card-title">
+                <span>1. 開脚跳び（かいきゃくとび）</span>
+                <span id="badge-vault-kaikyaku"></span>
+              </div>
+
+              <div class="four-step-grid">
+                <div class="step-box">
+                  <span class="step-label">ふみきり</span>
+                  両足をそろえてふみきる
+                </div>
+                <div class="step-box">
+                  <span class="step-label">着手</span>
+                  こしを高く上げて手を遠くにつく
+                </div>
+                <div class="step-box">
+                  <span class="step-label">つきはなし</span>
+                  とび箱をおしてとびこえる
+                </div>
+                <div class="step-box">
+                  <span class="step-label">着地</span>
+                  ひざをまげてピタリと止まる
+                </div>
+              </div>
+
+              <button class="btn-full btn-p" onclick="selectTaskAndShoot('vault_kaikyaku', '開脚跳び')">🎥 さつえいする</button>
+            </div>
+
+            <!-- Skill 2: 台上前転 -->
+            <div class="card-item" id="card-vault-taijo">
+              <div class="card-title">
+                <span>2. 台上前転（たいじょうぜんてん）</span>
+                <span id="badge-vault-taijo"></span>
+              </div>
+
+              <div class="four-step-grid">
+                <div class="step-box">
+                  <span class="step-label">ふみきり</span>
+                  両足をそろえてふみきる
+                </div>
+                <div class="step-box">
+                  <span class="step-label">着手</span>
+                  こしを高く上げて手を遠くにつく
+                </div>
+                <div class="step-box">
+                  <span class="step-label">回転</span>
+                  後頭部をつけておへそを見て回る
+                </div>
+                <div class="step-box">
+                  <span class="step-label">着地</span>
+                  ひざをまげてピタリと止まる
+                </div>
+              </div>
+
+              <button class="btn-full btn-p" onclick="selectTaskAndShoot('vault_taijo', '台上前転')">🎥 さつえいする</button>
+            </div>
+
+            <!-- Skill 3: 抱え込み跳び -->
+            <div class="card-item" id="card-vault-kakaekomi">
+              <div class="card-title">
+                <span>3. 抱え込み跳び（かかえこみとび）</span>
+                <span id="badge-vault-kakaekomi"></span>
+              </div>
+
+              <div class="four-step-grid">
+                <div class="step-box">
+                  <span class="step-label">ふみきり</span>
+                  両足をそろえてふみきる
+                </div>
+                <div class="step-box">
+                  <span class="step-label">着手</span>
+                  こしを高く上げて手を遠くにつく
+                </div>
+                <div class="step-box">
+                  <span class="step-label">つきはなし</span>
+                  とび箱をおして、手を前に出す
+                </div>
+                <div class="step-box">
+                  <span class="step-label">着地</span>
+                  ひざをまげてピタリと止まる
+                </div>
+              </div>
+
+              <button class="btn-full btn-p" onclick="selectTaskAndShoot('vault_kakaekomi', '抱え込み跳び')">🎥 さつえいする</button>
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- =========================================================
+           TAB 2: 「さつえい・ひかく」(COMPACT MAXIMIZED CAMERA)
+           ========================================================= -->
+      <section class="tab-page" id="tab-camera">
+        
+        <!-- Task Bar Header -->
+        <div class="cam-task-bar">
+          <div class="task-title-text">
+            <span>🎯 挑戦中: </span><span id="active-task-display">開脚跳び</span>
+          </div>
+          <button class="btn-cam-action" onclick="toggleCameraFacingMode()">🔄 カメラ切替</button>
+        </div>
+
+        <!-- DUAL CAMERA ARENA -->
+        <div class="dual-camera-arena">
+          
+          <!-- Slot 1: Left / Attempt 1 -->
+          <div class="slot-card" id="slot-card-1">
+            <span class="slot-tag" id="tag-slot-1">1回目 (左)</span>
+            <div class="slot-media-wrap">
+              <video id="webcam-live-preview" autoplay playsinline muted></video>
+              <video id="video-player-1" playsinline loop muted controls style="display:none;"></video>
+              <div class="placeholder-msg" id="placeholder-slot-1" style="display:none;">
+                <span>1回目が録画されます</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Slot 2: Right / Attempt 2 -->
+          <div class="slot-card" id="slot-card-2">
+            <span class="slot-tag" id="tag-slot-2">2回目 (右)</span>
+            <div class="slot-media-wrap">
+              <video id="video-player-2" playsinline loop muted controls style="display:none;"></video>
+              <div class="placeholder-msg" id="placeholder-slot-2">
+                <span>2回目を撮影すると<br>左右で比較できます</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Countdown HUD Overlay -->
+          <div class="hud-overlay" id="recording-hud-overlay">
+            <div class="hud-count-num" id="hud-countdown-text">3</div>
+            <div style="font-weight:900; margin-top:8px;" id="hud-status-msg">まもなく撮影スタート！</div>
+          </div>
+
+          <div class="rec-badge" id="recording-badge">🔴 REC</div>
+        </div>
+
+        <!-- BOTTOM CONTROLS STRIP -->
+        <div class="cam-bottom-controls">
+          <div class="cam-btn-row">
+            <!-- Mode 1: 5-Second Fixed Recording -->
+            <button class="btn-record-mode" id="btn-start-record-5s" onclick="triggerRecordingMode('5s')">
+              🔴 5秒撮影
+            </button>
+
+            <!-- Mode 2: Free Start/Stop Recording -->
+            <button class="btn-record-mode" id="btn-start-record-free" style="background:#b91c1c;" onclick="triggerRecordingMode('free')">
+              🔴 じゆう撮影
+            </button>
+
+            <!-- Playback Controls -->
+            <button class="btn-cam-action" onclick="syncPlayPauseVideos()">▶️/⏸️ 同時再生</button>
+            <button class="btn-cam-action" id="slow-toggle-btn" onclick="toggleSlowPlayback()">🐢 1.0x</button>
+          </div>
+
+          <!-- 4-Point Evaluation Section (Dynamic per Skill) -->
+          <div class="cam-points-eval-box" id="cam-points-eval-container">
+            <!-- Dynamically populated in JavaScript -->
+          </div>
+
+          <!-- Overall Self-Evaluation Stamps -->
+          <div class="evaluation-bar">
+            <span style="font-size:0.75rem; color:#ffffff; font-weight:800; flex-shrink:0;">そうごう評価:</span>
+            <button type="button" class="stamp-chip" id="chip-bacchiri" onclick="selectEvaluationStamp('ばっちり！')">💮 ばっちり！</button>
+            <button type="button" class="stamp-chip" id="chip-dekita" onclick="selectEvaluationStamp('できた！')">👍 できた！</button>
+            <button type="button" class="stamp-chip" id="chip-mousukoshi" onclick="selectEvaluationStamp('もう少し！')">💪 もう少し！</button>
+          </div>
+
+          <!-- Reflection Comment & Save Button -->
+          <div class="reflection-input-row">
+            <input type="text" id="reflection-text" class="reflection-input" placeholder="ふりかえり・きづいたことメモ...">
+            <button class="btn-save-record" onclick="saveCurrentLogData()">💾 きろくをほぞん</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================================================
+           TAB 3: 「せいちょうノート」(GROWTH PORTFOLIO & HISTORY)
+           ========================================================= -->
+      <section class="tab-page scrollable-page" id="tab-portfolio">
+        
+        <!-- Current Goal Banner in Growth Note -->
+        <div class="goal-banner">
+          <div>
+            <span>🎯 いまの もくひょう: </span>
+            <span id="growth-note-goal-text">開脚跳び</span>
+          </div>
+          <button class="btn-header goal-badge-btn" onclick="openGoalModal()" style="font-size:0.75rem;">変更する</button>
+        </div>
+
+        <h3 style="font-size:1.05rem; font-weight:900; margin-bottom:12px; text-align:left;">
+          📚 これまでの がくしゅうきろく
+        </h3>
+
+        <div id="portfolio-history-list">
+          <!-- Dynamically populated -->
+        </div>
+
+      </section>
+
+      <!-- =========================================================
+           TAB 4: 「管理」(TEACHER DASHBOARD & DATA EXPORT)
+           ========================================================= -->
+      <section class="tab-page scrollable-page" id="tab-teacher">
+        
+        <div class="card-item">
+          <div class="card-title">
+            <span>⚙️ 先生用データ管理</span>
+            <button class="btn-header" onclick="exportLogsCSV()">📥 CSV出力 (Excel対応)</button>
+          </div>
+          <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">
+            保存されている児童の全学習データ（目標・ポイント別評価・総合評価・メモ）をデータファイルとして保存できます。
+          </p>
+
+          <div class="teacher-table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>日時</th>
+                  <th>児童</th>
+                  <th>目標</th>
+                  <th>取り組んだ技</th>
+                  <th>総合評価</th>
+                  <th>ふりかえり</th>
+                </tr>
+              </thead>
+              <tbody id="teacher-logs-tbody">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <!-- =========================================================
+       MODAL DIALOGS
+       ========================================================= -->
+
+  <!-- Modal 1: Student Selection Modal -->
+  <div class="modal-backdrop" id="student-modal">
+    <div class="modal-box">
+      <div class="modal-title">
+        <span>👤</span> <span>児童の 設定</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">学年 と お名前</label>
+        <div style="display:flex; gap:8px;">
+          <select class="form-select" id="modal-grade-select" style="width:110px;" onchange="onGradeChange()">
+            <option value="1年">1年生</option>
+            <option value="2年">2年生</option>
+            <option value="3年" selected>3年生</option>
+            <option value="4年">4年生</option>
+            <option value="5年">5年生</option>
+            <option value="6年">6年生</option>
+          </select>
+          <select class="form-select" id="modal-student-name-select" style="flex:1;">
+            <!-- 学年に応じて自動セット -->
+          </select>
+        </div>
+      </div>
+
+      <button class="btn-full btn-p" onclick="saveStudentModalSelection()">決定してスタート</button>
+    </div>
+  </div>
+
+  <!-- Modal 2: Goal Selection Modal -->
+  <div class="modal-backdrop" id="goal-modal">
+    <div class="modal-box">
+      <div class="modal-title">
+        <span>🎯</span> <span>もくひょうを えらぼう！</span>
+      </div>
+
+      <div id="goal-selection-container" style="display:flex; flex-direction:column; gap:10px;">
+        <!-- Dynamically rendered based on grade -->
+      </div>
+
+      <button class="btn-full btn-p" style="margin-top:8px;" onclick="closeGoalModal()">決定</button>
+    </div>
+  </div>
+
+  <!-- Modal 3: Teacher Authentication Modal -->
+  <div class="modal-backdrop" id="teacher-auth-modal">
+    <div class="modal-box">
+      <div class="modal-title">
+        <span>🔒</span> <span>先生用パスコード</span>
+      </div>
+      <div class="form-group">
+        <label class="form-label">パスコードを入力してください</label>
+        <input type="password" class="form-input" id="teacher-passcode-input" placeholder="パスコード">
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn-full btn-o" onclick="closeTeacherAuthModal()">キャンセル</button>
+        <button class="btn-full btn-p" onclick="verifyTeacherPasscode()">確認</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Dialog -->
+  <div id="toast-modal" class="modal-backdrop">
+    <div class="modal-box" style="text-align:center; max-width:300px;">
+      <div style="font-size:2rem; margin-bottom:6px;">✅</div>
+      <div style="font-weight:900; font-size:1rem;" id="toast-msg-text">ほぞんしました</div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       JAVASCRIPT APP LOGIC
+       ========================================================= -->
+  <script>
+    // --- APP STATE ---
+    const APP_STATE = {
+      rubyOn: true,
+      currentGrade: "3年",
+      currentStudentName: "つのだ",
+      currentGoal: "開脚跳び",
+      activeTaskKey: "vault_kaikyaku",
+      activeTaskName: "開脚跳び",
+      cameraFacingMode: "user",
+      mediaStream: null,
+      mediaRecorder: null,
+      recordedChunks: [],
+      targetRecordingSlot: 1,
+      videoBlob1: null,
+      videoBlob2: null,
+      currentEvaluation: null,
+      pointEvaluations: {},
+      teacherAuthenticated: false,
+      isRecording: false,
+      currentRecordingMode: null,
+      autoStopTimer: null
+    };
+
+    // --- GRADE ROSTER DATA ---
+    const ROSTER_BY_GRADE = {
+      "1年": ["あおき るあ", "いがらし", "いしくら", "いで"],
+      "2年": ["あだち", "いなば さくや", "しまだ", "ないとう", "はらだ", "ほりぐち"],
+      "3年": ["つのだ", "なかじょう"],
+      "4年": ["あおき あまち", "あおやま", "うえの", "くりさき", "しぶや じん", "ちば", "のぐち"],
+      "5年": ["かわまた", "しぶや りん"],
+      "6年": ["いなば ゆきと", "こしづか みゆ", "こしづか りさ", "まゆみ"]
+    };
+
+    // --- TECHNIQUE POINT DEFINITIONS ---
+    const TECHNIQUE_POINTS = {
+      aux_fumikoshi: [
+        { key: 'point1', label: 'ジャンプ・着地', desc: 'ジャンプして跳び箱に乗ったり、おりたりする' }
+      ],
+      aux_matagi: [
+        { key: 'point1', label: '腕で支持', desc: '腕で体をしっかり支えて、体を前に動かす' }
+      ],
+      aux_matagi_dandan: [
+        { key: 'point1', label: 'お尻を持ちあげる', desc: '腕に力を入れてお尻を持ち上げてだんだんを越える' }
+      ],
+      aux_tobinori: [
+        { key: 'point1', label: '両足で乗る', desc: '腕で体重を支えて、箱の上に両足で乗る' }
+      ],
+      aux_heikingai: [
+        { key: 'point1', label: '押し出しジャンプ', desc: '両手で平均台をおして、高くジャンプしよう。' }
+      ],
+      vault_kaikyaku: [
+        { key: 'fumikiri', label: 'ふみきり', desc: '両足をそろえてふみきる' },
+        { key: 'chakushu', label: '着手', desc: 'こしを高く上げて手を遠くにつく' },
+        { key: 'tsukihanashi', label: 'つきはなし', desc: 'とび箱をおしてとびこえる' },
+        { key: 'chakuchi', label: '着地', desc: 'ひざをまげてピタリと止まる' }
+      ],
+      vault_taijo: [
+        { key: 'fumikiri', label: 'ふみきり', desc: '両足をそろえてふみきる' },
+        { key: 'chakushu', label: '着手', desc: 'こしを高く上げて手を遠くにつく' },
+        { key: 'kaiten', label: '回転', desc: '後頭部をつけておへそを見て回る' },
+        { key: 'chakuchi', label: '着地', desc: 'ひざをまげてピタリと止まる' }
+      ],
+      vault_kakaekomi: [
+        { key: 'fumikiri', label: 'ふみきり', desc: '両足をそろえてふみきる' },
+        { key: 'chakushu', label: '着手', desc: 'こしを高く上げて手を遠くにつく' },
+        { key: 'tsukihanashi', label: 'つきはなし', desc: 'とび箱をおして、手を前に出す' },
+        { key: 'chakuchi', label: '着地', desc: 'ひざをまげてピタリと止まる' }
+      ]
+    };
+
+    // --- INDEXED DB FOR VIDEO STORAGE ---
+    let dbInstance = null;
+    function initIndexedDB() {
+      return new Promise((resolve, reject) => {
+        const req = indexedDB.open("TobibakoNaviDB", 1);
+        req.onupgradeneeded = (e) => {
+          const db = e.target.result;
+          if (!db.objectStoreNames.contains("videos")) {
+            db.createObjectStore("videos");
+          }
+        };
+        req.onsuccess = (e) => {
+          dbInstance = e.target.result;
+          resolve(dbInstance);
+        };
+        req.onerror = () => resolve(null);
+      });
+    }
+
+    async function saveVideoBlob(id, blob) {
+      if (!dbInstance) return;
+      return new Promise((resolve) => {
+        const tx = dbInstance.transaction("videos", "readwrite");
+        const store = tx.objectStore("videos");
+        store.put(blob, id);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => resolve();
+      });
+    }
+
+    async function getVideoBlob(id) {
+      if (!dbInstance) return null;
+      return new Promise((resolve) => {
+        const tx = dbInstance.transaction("videos", "readonly");
+        const store = tx.objectStore("videos");
+        const req = store.get(id);
+        req.onsuccess = () => resolve(req.result || null);
+        req.onerror = () => resolve(null);
+      });
+    }
+
+    // --- SOUND SYNTHESIS ---
+    function playBeep(freq = 880, type = 'sine', duration = 0.15) {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = type;
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.2, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    // --- INITIALIZATION ---
+    window.onload = async function() {
+      await initIndexedDB();
+      loadStudentFromStorage();
+      setupWebcamStream();
+      renderPortfolioHistory();
+      updateGoalUI();
+      renderCameraPointEvaluations();
+
+      if (!localStorage.getItem("tobibako_student_id")) {
+        openStudentModal();
+      }
+    };
+
+    // --- STUDENT & GOAL MANAGEMENT ---
+    function getStudentGoalKey() {
+      return `tobibako_goal_${APP_STATE.currentGrade}_${APP_STATE.currentStudentName}`;
+    }
+
+    function loadStudentFromStorage() {
+      const saved = localStorage.getItem("tobibako_student_id");
+      if (saved) {
+        try {
+          const data = JSON.parse(saved);
+          APP_STATE.currentGrade = data.grade || "3年";
+          APP_STATE.currentStudentName = data.studentName || "つのだ";
+        } catch (e) {}
+      }
+      updateStudentHeaderLabel();
+      loadGoalForCurrentStudent();
+    }
+
+    function loadGoalForCurrentStudent() {
+      const isJunior = (APP_STATE.currentGrade === "1年" || APP_STATE.currentGrade === "2年");
+      if (isJunior) {
+        APP_STATE.currentGoal = "開脚跳び";
+      } else {
+        const savedGoal = localStorage.getItem(getStudentGoalKey());
+        APP_STATE.currentGoal = savedGoal || "開脚跳び";
+      }
+      updateGoalUI();
+    }
+
+    // 目標選択に応じた表示の更新関数
+    function updateGoalUI() {
+      // ヘッダーの目標バッジを更新
+      const goalHeaderBtn = document.getElementById('header-goal-label');
+      if (goalHeaderBtn) {
+        goalHeaderBtn.innerText = `🎯 もくひょう: ${APP_STATE.currentGoal}`;
+      }
+
+      // 成長ノート内の目標テキストを更新
+      const growthGoalText = document.getElementById('growth-note-goal-text');
+      if (growthGoalText) {
+        growthGoalText.innerText = APP_STATE.currentGoal;
+      }
+
+      // 目標の技カードをハイライト表示
+      const skillMap = {
+        "開脚跳び": { cardId: "card-vault-kaikyaku", badgeId: "badge-vault-kaikyaku" },
+        "台上前転": { cardId: "card-vault-taijo", badgeId: "badge-vault-taijo" },
+        "抱え込み跳び": { cardId: "card-vault-kakaekomi", badgeId: "badge-vault-kakaekomi" }
+      };
+
+      Object.keys(skillMap).forEach(goalName => {
+        const info = skillMap[goalName];
+        const card = document.getElementById(info.cardId);
+        const badge = document.getElementById(info.badgeId);
+        if (card) {
+          if (goalName === APP_STATE.currentGoal) {
+            card.classList.add('is-goal-target');
+            if (badge) badge.innerHTML = '<span class="goal-tag-badge">もくひょう</span>';
+          } else {
+            card.classList.remove('is-goal-target');
+            if (badge) badge.innerHTML = '';
+          }
+        }
+      });
+    }
+
+    function updateStudentHeaderLabel() {
+      document.getElementById('header-student-label').innerText = `${APP_STATE.currentGrade} ${APP_STATE.currentStudentName}`;
+    }
+
+    function updateStudentNameOptions(targetName = "") {
+      const grade = document.getElementById('modal-grade-select').value;
+      const nameSelect = document.getElementById('modal-student-name-select');
+      const names = ROSTER_BY_GRADE[grade] || [];
+      nameSelect.innerHTML = '';
+      names.forEach(name => {
+        const opt = document.createElement('option');
+        opt.value = name;
+        opt.textContent = name;
+        if (name === targetName) {
+          opt.selected = true;
+        }
+        nameSelect.appendChild(opt);
+      });
+    }
+
+    function onGradeChange() {
+      updateStudentNameOptions();
+    }
+
+    function openStudentModal() {
+      document.getElementById('modal-grade-select').value = APP_STATE.currentGrade;
+      updateStudentNameOptions(APP_STATE.currentStudentName);
+      document.getElementById('student-modal').classList.add('active');
+    }
+
+    function saveStudentModalSelection() {
+      const grade = document.getElementById('modal-grade-select').value;
+      const nameSelect = document.getElementById('modal-student-name-select');
+      const name = nameSelect ? nameSelect.value : "つのだ";
+
+      APP_STATE.currentGrade = grade;
+      APP_STATE.currentStudentName = name;
+
+      // 児童設定を保存
+      localStorage.setItem("tobibako_student_id", JSON.stringify({
+        grade: grade,
+        studentName: name
+      }));
+
+      updateStudentHeaderLabel();
+      loadGoalForCurrentStudent();
+      resetRecordingState();
+      renderCameraPointEvaluations();
+      document.getElementById('student-modal').classList.remove('active');
+    }
+
+    // --- GOAL MODAL ---
+    function openGoalModal() {
+      const container = document.getElementById('goal-selection-container');
+      container.innerHTML = '';
+
+      const isJunior = (APP_STATE.currentGrade === "1年" || APP_STATE.currentGrade === "2年");
+
+      if (isJunior) {
+        container.innerHTML = `
+          <div style="background:#eff6ff; border:1.5px solid #93c5fd; padding:12px; border-radius:var(--radius-md); font-size:0.85rem; color:#1e40af; line-height:1.4;">
+            <strong>💡 1・2年生のみなさんへ</strong><br>
+            低学年は基本となる「<strong>開脚跳び</strong>」が目標となります。
+          </div>
+          <div class="goal-option-btn selected">
+            <span>1. 開脚跳び（基本）</span>
+            <span>✓ 固定</span>
+          </div>
+        `;
+      } else {
+        const options = ["開脚跳び", "台上前転", "抱え込み跳び"];
+        options.forEach(opt => {
+          const btn = document.createElement('div');
+          btn.className = `goal-option-btn ${opt === APP_STATE.currentGoal ? 'selected' : ''}`;
+          btn.onclick = () => selectGoal(opt);
+          btn.innerHTML = `
+            <span>${opt}</span>
+            <span>${opt === APP_STATE.currentGoal ? '✓ 選択中' : ''}</span>
+          `;
+          container.appendChild(btn);
+        });
+      }
+
+      document.getElementById('goal-modal').classList.add('active');
+    }
+
+    function selectGoal(goalName) {
+      APP_STATE.currentGoal = goalName;
+      localStorage.setItem(getStudentGoalKey(), goalName);
+      updateGoalUI();
+      openGoalModal(); // re-render
+    }
+
+    function closeGoalModal() {
+      document.getElementById('goal-modal').classList.remove('active');
+    }
+
+    // --- POINT EVALUATION SYSTEM IN CAMERA TAB ---
+    function renderCameraPointEvaluations() {
+      const container = document.getElementById('cam-points-eval-container');
+      if (!container) return;
+
+      const points = TECHNIQUE_POINTS[APP_STATE.activeTaskKey];
+      if (!points) {
+        container.style.display = 'none';
+        return;
+      }
+
+      container.style.display = 'flex';
+      container.innerHTML = '';
+
+      points.forEach(pt => {
+        const row = document.createElement('div');
+        row.className = 'cam-point-row';
+        const curEval = APP_STATE.pointEvaluations[pt.key] || null;
+
+        const bClass = curEval === 'ばっちり！' ? 'active active-bacchiri' : '';
+        const dClass = curEval === 'できた！' ? 'active active-dekita' : '';
+        const mClass = curEval === 'もう少し！' ? 'active active-mousukoshi' : '';
+
+        row.innerHTML = `
+          <div style="display:flex; align-items:center; gap:6px; min-width:0; flex:1;">
+            <span class="cam-point-label">${pt.label}</span>
+            <span class="cam-point-desc">${pt.desc}</span>
+          </div>
+          <div class="point-eval-bar">
+            <button type="button" class="point-eval-btn ${bClass}" onclick="setCamPointEvaluation('${pt.key}','ばっちり！')">💮 ばっちり</button>
+            <button type="button" class="point-eval-btn ${dClass}" onclick="setCamPointEvaluation('${pt.key}','できた！')">👍 できた</button>
+            <button type="button" class="point-eval-btn ${mClass}" onclick="setCamPointEvaluation('${pt.key}','もう少し！')">💪 もう少し</button>
+          </div>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    function setCamPointEvaluation(pointKey, level) {
+      if (APP_STATE.pointEvaluations[pointKey] === level) {
+        delete APP_STATE.pointEvaluations[pointKey];
+      } else {
+        APP_STATE.pointEvaluations[pointKey] = level;
+      }
+
+      if (level === 'ばっちり！') playBeep(1200, 'sine', 0.15);
+      else if (level === 'できた！') playBeep(850, 'sine', 0.15);
+      else playBeep(550, 'sine', 0.15);
+
+      renderCameraPointEvaluations();
+    }
+
+    // --- NAVIGATION TAB SWITCHER ---
+    function switchTab(tabId) {
+      if (tabId === 'tab-teacher' && !APP_STATE.teacherAuthenticated) {
+        document.getElementById('teacher-auth-modal').classList.add('active');
+        return;
+      }
+
+      document.querySelectorAll('.tab-page').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+
+      document.getElementById(tabId).classList.add('active');
+      const btnMap = {
+        'tab-explore': 'nav-btn-explore',
+        'tab-camera': 'nav-btn-camera',
+        'tab-portfolio': 'nav-btn-portfolio',
+        'tab-teacher': 'nav-btn-teacher'
+      };
+      if (btnMap[tabId]) document.getElementById(btnMap[tabId]).classList.add('active');
+
+      if (tabId === 'tab-camera') renderCameraPointEvaluations();
+      if (tabId === 'tab-portfolio') renderPortfolioHistory();
+      if (tabId === 'tab-teacher') renderTeacherLogsTable();
+    }
+
+    function selectTaskAndShoot(taskKey, taskName) {
+      if (APP_STATE.activeTaskKey !== taskKey) {
+        resetRecordingState();
+      }
+      APP_STATE.activeTaskKey = taskKey;
+      APP_STATE.activeTaskName = taskName;
+      document.getElementById('active-task-display').innerText = taskName;
+      renderCameraPointEvaluations();
+      switchTab('tab-camera');
+    }
+
+    // --- CAMERA STREAM & RECORDING ---
+    async function setupWebcamStream() {
+      try {
+        if (APP_STATE.mediaStream) {
+          APP_STATE.mediaStream.getTracks().forEach(t => t.stop());
+        }
+        APP_STATE.mediaStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: APP_STATE.cameraFacingMode },
+          audio: false
+        });
+        const liveVideo = document.getElementById('webcam-live-preview');
+        if (liveVideo) {
+          liveVideo.srcObject = APP_STATE.mediaStream;
+          if (APP_STATE.cameraFacingMode === 'environment') {
+            liveVideo.classList.add('rear-camera');
+          } else {
+            liveVideo.classList.remove('rear-camera');
+          }
+        }
+      } catch (e) {
+        console.warn("Webcam access warning:", e);
+      }
+    }
+
+    function toggleCameraFacingMode() {
+      APP_STATE.cameraFacingMode = (APP_STATE.cameraFacingMode === 'user') ? 'environment' : 'user';
+      setupWebcamStream();
+    }
+
+    function triggerRecordingMode(mode) {
+      if (APP_STATE.isRecording) {
+        if (mode === 'free') {
+          stopActiveRecording();
+        }
+        return;
+      }
+
+      APP_STATE.isRecording = true;
+      APP_STATE.currentRecordingMode = mode;
+
+      const hud = document.getElementById('recording-hud-overlay');
+      const countText = document.getElementById('hud-countdown-text');
+      hud.style.display = 'flex';
+
+      let count = 3;
+      countText.innerText = count;
+      playBeep(880, 'sine', 0.1);
+
+      const interval = setInterval(() => {
+        count--;
+        if (count > 0) {
+          countText.innerText = count;
+          playBeep(880, 'sine', 0.1);
+        } else {
+          clearInterval(interval);
+          hud.style.display = 'none';
+          startMediaRecording();
+        }
+      }, 1000);
+    }
+
+    function startMediaRecording() {
+      if (!APP_STATE.mediaStream) return;
+      APP_STATE.recordedChunks = [];
+      try {
+        APP_STATE.mediaRecorder = new MediaRecorder(APP_STATE.mediaStream);
+        APP_STATE.mediaRecorder.ondataavailable = e => {
+          if (e.data.size > 0) APP_STATE.recordedChunks.push(e.data);
+        };
+        APP_STATE.mediaRecorder.onstop = handleRecordingStopped;
+        APP_STATE.mediaRecorder.start();
+
+        document.getElementById('recording-badge').style.display = 'flex';
+        playBeep(1200, 'square', 0.2);
+
+        if (APP_STATE.currentRecordingMode === '5s') {
+          document.getElementById('btn-start-record-5s').classList.add('recording-active');
+          APP_STATE.autoStopTimer = setTimeout(() => {
+            stopActiveRecording();
+          }, 5000);
+        } else {
+          document.getElementById('btn-start-record-free').classList.add('recording-active');
+          document.getElementById('btn-start-record-free').innerText = '⏹️ ていし';
+        }
+      } catch (e) {
+        APP_STATE.isRecording = false;
+      }
+    }
+
+    function stopActiveRecording() {
+      if (APP_STATE.autoStopTimer) clearTimeout(APP_STATE.autoStopTimer);
+      if (APP_STATE.mediaRecorder && APP_STATE.mediaRecorder.state === 'recording') {
+        APP_STATE.mediaRecorder.stop();
+      }
+      APP_STATE.isRecording = false;
+      document.getElementById('recording-badge').style.display = 'none';
+      document.getElementById('btn-start-record-5s').classList.remove('recording-active');
+      document.getElementById('btn-start-record-free').classList.remove('recording-active');
+      document.getElementById('btn-start-record-free').innerText = '🔴 じゆう撮影';
+    }
+
+    function handleRecordingStopped() {
+      const blob = new Blob(APP_STATE.recordedChunks, { type: 'video/webm' });
+      const url = URL.createObjectURL(blob);
+
+      if (APP_STATE.targetRecordingSlot === 1) {
+        APP_STATE.videoBlob1 = blob;
+        const v1 = document.getElementById('video-player-1');
+        v1.src = url;
+        v1.style.display = 'block';
+        document.getElementById('webcam-live-preview').style.display = 'none';
+        APP_STATE.targetRecordingSlot = 2;
+        updateSlotTargetCardHighlight();
+      } else {
+        APP_STATE.videoBlob2 = blob;
+        const v2 = document.getElementById('video-player-2');
+        v2.src = url;
+        v2.style.display = 'block';
+        document.getElementById('placeholder-slot-2').style.display = 'none';
+        updateSlotTargetCardHighlight();
+      }
+    }
+
+    function updateSlotTargetCardHighlight() {
+      const c1 = document.getElementById('slot-card-1');
+      const c2 = document.getElementById('slot-card-2');
+      if (APP_STATE.targetRecordingSlot === 1) {
+        c1.classList.add('active-target');
+        c2.classList.remove('active-target');
+      } else {
+        c2.classList.add('active-target');
+        c1.classList.remove('active-target');
+      }
+    }
+
+    function resetRecordingState() {
+      if (APP_STATE.isRecording) stopActiveRecording();
+      APP_STATE.targetRecordingSlot = 1;
+      APP_STATE.videoBlob1 = null;
+      APP_STATE.videoBlob2 = null;
+      APP_STATE.pointEvaluations = {};
+
+      const v1 = document.getElementById('video-player-1');
+      const v2 = document.getElementById('video-player-2');
+      if (v1) { v1.pause(); v1.removeAttribute('src'); v1.load(); v1.style.display = 'none'; }
+      if (v2) { v2.pause(); v2.removeAttribute('src'); v2.load(); v2.style.display = 'none'; }
+
+      const webcam = document.getElementById('webcam-live-preview');
+      if (webcam) webcam.style.display = 'block';
+
+      const p1 = document.getElementById('placeholder-slot-1');
+      const p2 = document.getElementById('placeholder-slot-2');
+      if (p1) p1.style.display = 'none';
+      if (p2) p2.style.display = 'flex';
+
+      APP_STATE.currentEvaluation = null;
+      document.querySelectorAll('.stamp-chip').forEach(c => c.classList.remove('active-bacchiri', 'active-dekita', 'active-mousukoshi'));
+
+      const reflection = document.getElementById('reflection-text');
+      if (reflection) reflection.value = '';
+
+      updateSlotTargetCardHighlight();
+      renderCameraPointEvaluations();
+    }
+
+    function syncPlayPauseVideos() {
+      const v1 = document.getElementById('video-player-1');
+      const v2 = document.getElementById('video-player-2');
+
+      if (v1 && v1.src) {
+        if (v1.paused) {
+          v1.play();
+          if (v2 && v2.src) v2.play();
+        } else {
+          v1.pause();
+          if (v2 && v2.src) v2.pause();
+        }
+      }
+    }
+
+    function toggleSlowPlayback() {
+      const v1 = document.getElementById('video-player-1');
+      const v2 = document.getElementById('video-player-2');
+      const btn = document.getElementById('slow-toggle-btn');
+
+      const isSlow = btn.innerText.includes("0.5x");
+      const targetRate = isSlow ? 1.0 : 0.5;
+
+      if (v1) v1.playbackRate = targetRate;
+      if (v2) v2.playbackRate = targetRate;
+
+      btn.innerText = isSlow ? "🐢 1.0x" : "🐢 0.5x";
+    }
+
+    function selectEvaluationStamp(evalName) {
+      APP_STATE.currentEvaluation = evalName;
+      document.querySelectorAll('.stamp-chip').forEach(c => c.classList.remove('active-bacchiri', 'active-dekita', 'active-mousukoshi'));
+
+      if (evalName === 'ばっちり！') document.getElementById('chip-bacchiri').classList.add('active-bacchiri');
+      if (evalName === 'できた！') document.getElementById('chip-dekita').classList.add('active-dekita');
+      if (evalName === 'もう少し！') document.getElementById('chip-mousukoshi').classList.add('active-mousukoshi');
+
+      playBeep(900, 'sine', 0.12);
+    }
+
+    // --- DATA PERSISTENCE & PORTFOLIO ---
+    async function saveCurrentLogData() {
+      const reflection = document.getElementById('reflection-text').value;
+      const timestamp = new Date().toISOString();
+      const logId = "log_" + Date.now();
+
+      let videoId1 = null;
+      let videoId2 = null;
+
+      if (APP_STATE.videoBlob1) {
+        videoId1 = logId + "_v1";
+        await saveVideoBlob(videoId1, APP_STATE.videoBlob1);
+      }
+      if (APP_STATE.videoBlob2) {
+        videoId2 = logId + "_v2";
+        await saveVideoBlob(videoId2, APP_STATE.videoBlob2);
+      }
+
+      const entry = {
+        id: logId,
+        grade: APP_STATE.currentGrade,
+        studentName: APP_STATE.currentStudentName,
+        goal: APP_STATE.currentGoal,
+        taskKey: APP_STATE.activeTaskKey,
+        taskName: APP_STATE.activeTaskName,
+        evaluation: APP_STATE.currentEvaluation || "未評価",
+        pointEvaluations: { ...APP_STATE.pointEvaluations },
+        reflection: reflection,
+        timestamp: timestamp,
+        videoId1: videoId1,
+        videoId2: videoId2
+      };
+
+      const logs = JSON.parse(localStorage.getItem("tobibako_logs") || "[]");
+      logs.unshift(entry);
+      localStorage.setItem("tobibako_logs", JSON.stringify(logs));
+
+      document.getElementById('reflection-text').value = '';
+      showToastModal("きろくをほぞんしました！");
+    }
+
+    function renderPortfolioHistory() {
+      const container = document.getElementById('portfolio-history-list');
+      if (!container) return;
+
+      const logs = JSON.parse(localStorage.getItem("tobibako_logs") || "[]");
+      const filtered = logs.filter(l => l.grade === APP_STATE.currentGrade && l.studentName === APP_STATE.currentStudentName);
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding:30px; color:var(--text-muted); font-size:0.9rem;">まだきろくがありません</div>`;
+        return;
+      }
+
+      container.innerHTML = '';
+      filtered.forEach(item => {
+        const dateStr = new Date(item.timestamp).toLocaleString('ja-JP', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+        
+        let ptHtml = '';
+        if (item.pointEvaluations && Object.keys(item.pointEvaluations).length > 0) {
+          const pts = TECHNIQUE_POINTS[item.taskKey] || [];
+          ptHtml = pts.map(p => {
+            const ev = item.pointEvaluations[p.key];
+            if (!ev) return '';
+            return `<span style="background:#f1f5f9; padding:2px 6px; border-radius:4px; font-size:0.72rem; border:1px solid #cbd5e1;">${p.label}: <strong>${ev}</strong></span>`;
+          }).join(' ');
+        }
+
+        const card = document.createElement('div');
+        card.className = 'portfolio-card';
+        card.innerHTML = `
+          <div class="portfolio-header">
+            <span>📅 ${dateStr}</span>
+            <span style="font-weight:900; color:var(--primary);">🎯 目標: ${item.goal}</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong style="font-size:0.95rem;">${item.taskName}</strong>
+            <span style="font-weight:900; font-size:0.85rem;">総合: ${item.evaluation}</span>
+          </div>
+          ${ptHtml ? `<div style="display:flex; gap:4px; flex-wrap:wrap; margin-top:2px;">${ptHtml}</div>` : ''}
+          ${item.reflection ? `<div style="font-size:0.8rem; background:#fafafa; padding:6px; border-radius:6px; border:1px dashed var(--border);">💭 ${item.reflection}</div>` : ''}
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // --- TEACHER MANAGEMENT & CSV EXPORT ---
+    function openTeacherAuthModal() {
+      document.getElementById('teacher-auth-modal').classList.add('active');
+    }
+
+    function closeTeacherAuthModal() {
+      document.getElementById('teacher-auth-modal').classList.remove('active');
+    }
+
+    function verifyTeacherPasscode() {
+      const pass = document.getElementById('teacher-passcode-input').value;
+      if (pass === "20261118") {
+        APP_STATE.teacherAuthenticated = true;
+        closeTeacherAuthModal();
+        switchTab('tab-teacher');
+      } else {
+        showToastModal("パスコードが違います");
+      }
+    }
+
+    function renderTeacherLogsTable() {
+      const tbody = document.getElementById('teacher-logs-tbody');
+      if (!tbody) return;
+
+      const logs = JSON.parse(localStorage.getItem("tobibako_logs") || "[]");
+      tbody.innerHTML = '';
+
+      logs.forEach(item => {
+        const dateStr = new Date(item.timestamp).toLocaleString('ja-JP', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${dateStr}</td>
+          <td>${item.grade} ${item.studentName}</td>
+          <td>${item.goal}</td>
+          <td>${item.taskName}</td>
+          <td>${item.evaluation}</td>
+          <td>${item.reflection || '-'}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function exportLogsCSV() {
+      const logs = JSON.parse(localStorage.getItem("tobibako_logs") || "[]");
+      if (logs.length === 0) {
+        alert("出力するデータがありません");
+        return;
+      }
+
+      let csv = "日時,学年,氏名,目標,挑戦技,総合評価,ふりかえり\n";
+      logs.forEach(l => {
+        const d = new Date(l.timestamp).toLocaleString('ja-JP');
+        const ref = (l.reflection || "").replace(/"/g, '""');
+        csv += `"${d}","${l.grade}","${l.studentName}","${l.goal}","${l.taskName}","${l.evaluation}","${ref}"\n`;
+      });
+
+      const bom = new Uint8Array([0xEF, 0xBB, 0xBF]); // UTF-8 BOM
+      const blob = new Blob([bom, csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `とびばこナビ_学習記録_${new Date().toISOString().slice(0,10)}.csv`;
+      a.click();
+    }
+
+    function showToastModal(msg) {
+      document.getElementById('toast-msg-text').innerText = msg;
+      const toast = document.getElementById('toast-modal');
+      toast.classList.add('active');
+      setTimeout(() => {
+        toast.classList.remove('active');
+      }, 1400);
+    }
+  </script>
+</body>
+</html>
